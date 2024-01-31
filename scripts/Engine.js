@@ -37,29 +37,14 @@ class Engine {
 
     this.gridMesh = new GridMesh(gl);  
     this.gridRenderer = new GridRenderer(gl);
-    this.grids = [];
-    this.grids.push(new GridObject(this.gridMesh));
-    this.grids[0].setPosition(0,0,-2);
-    this.grids[0].setScale(2,2,4);
-    this.grids[0].setColor(1.1,2.1,1.8);
+		
+		worldGraph.setMesh(this.gridMesh);
+		this.selectedVertex = worldGraph.vertices[0];
+		//this.cam.setPosition(0,4,-3);
 
-    this.grids.push(new GridObject(this.gridMesh));
-    this.grids[1].setColor(1.0,0.59,0.11);
-    this.grids[1].setRotation(0,0,-90);
-    this.grids[1].setScale(3,1,2);
-    this.grids[1].setPosition(-2,3,-4);
 
-    this.grids.push(new GridObject(this.gridMesh));
-    this.grids[2].setPosition(0,2,-6);
-    this.grids[2].setColor(3.0,1.3,1.3);
-    this.grids[2].setScale(2,1,2);
-    this.grids[2].setRotation(90,0,0);
+		console.log("length : " + this.selectedVertex.list.length);
 
-    
-    this.selectedGrid = this.grids[0];
-    this.distThresh = 1.1;
-    this.sgi = 0;
-    this.oldSgi = 0;
   }
 
   loop =()=> {
@@ -70,40 +55,42 @@ class Engine {
         this.render();
       }
     }, ticks);
-
+		
+	//	this.update();
+//		this.render();
   }
 
   render =()=> {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    this.gridRenderer.render(this.grids, this.cam);
+    this.gridRenderer.render(this.selectedVertex.list, this.cam);
  
   }
 
   update =()=> {
 
-    this.cam.rotateGravity(this.rotx, this.roty, this.selectedGrid.getNormal());
-    this.cam.translateGravity(this.forward, this.strafe, this.selectedGrid.getNormal());
+    this.cam.rotateGravity(this.rotx, this.roty, this.selectedVertex.gridObject.getNormal());
+    this.cam.translateGravity(this.forward, this.strafe, this.selectedVertex.gridObject.getNormal());
     //this.cam.translate(this.forward, this.strafe);
     //this.cam.rotate(this.rotx, this.roty, 0);
-    
-    let mostNegative = 0;
-    for(let i=0; i<this.grids.length; i++){
-      let dotProduct = Vec3.dot(this.grids[i].getNormal(), this.cam.getMoveDirection());
-      if(dotProduct < mostNegative && 
-          this.grids[i].perpendicularDistance(this.cam.getPosition()) < this.distThresh &&
-          this.grids[i].inRange(this.cam.getPosition())) { 
-        this.sgi = i;
-        mostNegative = dotProduct;
-      } 
-    }
-    
-    if(this.oldSgi != this.sgi){
-      this.oldSgi = this.sgi;
-      this.selectedGrid = this.grids[this.sgi];
-      this.cam.orientWithGrid(this.selectedGrid);
-    }
+		
+		let dotThresh = -0.6;
+		let perpThresh = 1;
+		let gridChange = true;
+		let newIndex = 0;
+		for(let i=1; i<this.selectedVertex.list.length; i++){
+			// velocity towards edge, distance
+			let edge = worldGraph.getEdge(this.selectedVertex, this.selectedVertex.list[i]);
+			let walkingToGrid = this.cam.isWalkingToGrid(edge, dotThresh, perpThresh);
 
+			console.log(walkingToGrid);			
+			if(walkingToGrid){
+				//this.selectedVertex = this.selectedVertex.list[i];
+				//this.cam.orientWithGrid(this.selectedVertex.gridObject, edge);
+			}
+
+		}
+    
     this.roty = 0;
     this.rotx = 0;
     this.forward = 0;
@@ -156,4 +143,5 @@ class Engine {
     }
   }
 
+	
 }

@@ -9,6 +9,7 @@ document.write(`
 <script src="scripts/Object.js"></script>
 <script src="scripts/GameObject.js"></script>
 <script src="scripts/GridObject.js"></script>
+<script src="scripts/Graph.js"></script>
 <script src="scripts/Light.js"></script>
 <script src="scripts/Camera.js"></script>
 <script src="scripts/shader.js"></script>

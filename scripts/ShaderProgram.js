@@ -95,7 +95,7 @@ class ShaderProgram {
     let camPos = name + ".pos";
 
     this.gl.uniform4f(this.uniformMap.get(camSpin), cam.spin.get(1), cam.spin.get(2), cam.spin.get(3), cam.spin.get(0));
-    this.gl.uniform3f(this.uniformMap.get(camPos), cam.position.get(0), cam.position.get(1), cam.position.get(2));
+    this.gl.uniform3f(this.uniformMap.get(camPos), cam.pos.get(0), cam.pos.get(1), cam.pos.get(2));
   }
 
   setUniformDirectionalLight =(name,directionalLight)=> {

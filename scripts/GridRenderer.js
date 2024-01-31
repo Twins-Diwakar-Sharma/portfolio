@@ -11,22 +11,23 @@ class GridRenderer {
     this.shader.mapUniform("color");
   }
 
-  render =(objects, cam)=> {
+  render =(adjacencyList, cam)=> {
     this.shader.use();
     this.shader.setUniformMat4("projection", proj_perspective);
     this.shader.setUniformCam("cam", cam);
     
-    objects[0].bind();
-    for(const obj of objects){
-      this.shader.setUniformVec3("scale", obj.getScale());
-      this.shader.setUniformVec3("position", obj.getPosition());
-      this.shader.setUniformQuat("rotation", obj.getRotation());
-      this.shader.setUniformVec3("color", obj.getColor());
+    adjacencyList[0].gridObject.bind();
+    for(const vertex of adjacencyList){
+      this.shader.setUniformVec3("scale", vertex.gridObject.getScale());
+      this.shader.setUniformVec3("position", vertex.gridObject.getPosition());
+      this.shader.setUniformQuat("rotation", vertex.gridObject.getRotation());
+      this.shader.setUniformVec3("color", vertex.gridObject.getColor());
       this.gl.enableVertexAttribArray(0);
-      this.gl.drawElements(this.gl.TRIANGLE_STRIP, obj.size(), this.gl.UNSIGNED_BYTE, 0);
+      this.gl.drawElements(this.gl.TRIANGLE_STRIP, vertex.gridObject.size(), this.gl.UNSIGNED_BYTE, 0);
       this.gl.disableVertexAttribArray(0);
     }
-    objects[0].unbind();
+
+    adjacencyList[0].gridObject.unbind();
 
     this.shader.unuse();
   }
