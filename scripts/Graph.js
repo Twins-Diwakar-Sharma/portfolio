@@ -74,49 +74,58 @@ class Graph {
 };
 
 
+
 let worldGraph = new Graph();
-worldGraph.vertices.push(new GraphVertex());
-worldGraph.vertices[0].gridObject.setPosition(0,0,0);
-worldGraph.vertices[0].gridObject.setScale(2,2,4);
-worldGraph.vertices[0].gridObject.setColor(1.1,2.1,1.8);
-
-worldGraph.vertices.push(new GraphVertex());
-worldGraph.vertices[1].gridObject.setRotation(90, 0, 0);
-worldGraph.vertices[1].gridObject.setScale(1,1,4);
-worldGraph.vertices[1].gridObject.setPosition(0,4,-4);
-worldGraph.vertices[1].gridObject.setColor(1.0, 0.59, 0.11);
-
-let corners = worldGraph.getGridObject(1).getCorners();
-let edge01 = new GraphEdge(corners.botLeft, corners.botRight, true);
-worldGraph.makeAdjacent(0, 1, edge01);
-
-worldGraph.vertices.push(new GraphVertex());
-worldGraph.getGridObject(2).setRotation(90,0,0);
-worldGraph.getGridObject(2).setScale(1,1,1);
-worldGraph.getGridObject(2).setPosition(0,1,-4);
-worldGraph.getGridObject(2).convertToWorld(worldGraph.getGridObject(1));
-
-corners = worldGraph.getGridObject(2).getCorners();
-let edge12 = new GraphEdge(corners.botLeft, corners.botRight, true);
-
-worldGraph.makeAdjacent(1, 2, edge12);
-
-worldGraph.vertices.push(new GraphVertex());
-worldGraph.getGridObject(3).setColor(0.8, 2.1, 1.3);
-worldGraph.getGridObject(3).setScale(1,1,2);
-worldGraph.getGridObject(3).setRotation(0,90,0);
-worldGraph.getGridObject(3).rotate(0, 0, 45);
-worldGraph.getGridObject(3).setPosition(2,0,0);
-let len = worldGraph.getGridObject(3).scl.data[2];
-let radConv = Math.PI / 180.0;
-let angle = 45.0 * radConv;
-let toAdd = new Vec3( len * Math.cos(angle), len * Math.sin(angle), 0);
-worldGraph.getGridObject(3).pos = Vec3.add(worldGraph.getGridObject(3).pos, toAdd);
+function createWorld(){
+    let radConv = Math.PI / 180.0;
 
 
-corners = worldGraph.getGridObject(3).getCorners();
-let edge03 = new GraphEdge(corners.botLeft, corners.botRight, true);
+    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices[0].gridObject.setPosition(0,0,0);
+    worldGraph.vertices[0].gridObject.setScale(2,2,4);
+    worldGraph.vertices[0].gridObject.setColor(1.1,2.1,1.8);
 
-worldGraph.makeAdjacent(0, 3, edge03);
+    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices[1].gridObject.setRotation(-30, 0, 0);
+    worldGraph.vertices[1].gridObject.setScale(1,1,4);
+    worldGraph.vertices[1].gridObject.setPosition(0,0,-4);
+    let g1SclZ = worldGraph.getGridObject(1).scl.get(2);
+    let g1AddAngle = 30 * radConv;
+    let addG1 = new Vec3(0,-g1SclZ*Math.sin(g1AddAngle), -g1SclZ*Math.cos(g1AddAngle));
+    worldGraph.getGridObject(1).pos = Vec3.add(worldGraph.getGridObject(1).pos, addG1);
+    worldGraph.vertices[1].gridObject.setColor(1.0, 0.59, 0.11);
 
+    let corners = worldGraph.getGridObject(1).getCorners();
+    let edge01 = new GraphEdge(corners.botLeft, corners.botRight, false);
+    worldGraph.makeAdjacent(0, 1, edge01);
+    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.getGridObject(2).setRotation(90,0,0);
+    worldGraph.getGridObject(2).setScale(3,1,3);
+    worldGraph.getGridObject(2).setPosition(0,3,-4);
+    worldGraph.getGridObject(2).setColor(0.2, 2.0, 0.2);
+    worldGraph.getGridObject(2).convertToWorld(worldGraph.getGridObject(1));
+
+    corners = worldGraph.getGridObject(2).getCorners();
+    let edge12 = new GraphEdge(corners.botLeft, corners.botRight, true);
+
+    worldGraph.makeAdjacent(1, 2, edge12);
+
+    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.getGridObject(3).setColor(3.1, 1.1, 1.5);
+    worldGraph.getGridObject(3).setScale(1,1,2);
+    worldGraph.getGridObject(3).setRotation(0,90,0);
+    worldGraph.getGridObject(3).rotate(0, 0, 45);
+    worldGraph.getGridObject(3).setPosition(2,0,0);
+    let len = worldGraph.getGridObject(3).scl.data[2];
+    let angle = 45.0 * radConv;
+    let toAdd = new Vec3( len * Math.cos(angle), len * Math.sin(angle), 0);
+    worldGraph.getGridObject(3).pos = Vec3.add(worldGraph.getGridObject(3).pos, toAdd);
+
+
+    corners = worldGraph.getGridObject(3).getCorners();
+    let edge03 = new GraphEdge(corners.topLeft, corners.topRight, true);
+    worldGraph.makeAdjacent(0, 3, edge03);
+}
+
+createWorld();
 

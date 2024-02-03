@@ -8,6 +8,7 @@ class GridObject extends Object{
 		this.spin = new Quat(1,0,0,0);
 		this.color = new Vec3(1.0,1.0,1.0);
 		this.normal = new Vec3(0,1,0);
+        this.upSide = true;
   }
   
   bind =()=> {
@@ -125,14 +126,28 @@ class GridObject extends Object{
 		let botLeft = new Vec3(-this.scl.get(0),0,this.scl.get(2));
 
 
-
-		topLeft = this.spin.rotateVec3(topLeft);
-		topRight = this.spin.rotateVec3(topRight);
-		botRight = this.spin.rotateVec3(botRight);
-		botLeft = this.spin.rotateVec3(botLeft);
+		topLeft =  Vec3.add(this.spin.rotateVec3(topLeft),this.pos);
+		topRight = Vec3.add(this.spin.rotateVec3(topRight),this.pos);
+		botRight = Vec3.add(this.spin.rotateVec3(botRight),this.pos);
+		botLeft =  Vec3.add(this.spin.rotateVec3(botLeft),this.pos);
 
 
 		return {topLeft, topRight, botRight, botLeft};
+  }
+
+    
+  inRange =(camPos)=> {
+    let vec = Vec3.subtract(camPos, this.pos);
+    let rotatedVec = (this.spin.conjugate()).rotateVec3(vec);
+    rotatedVec.set(1,0);
+    rotatedVec.set(0, this.scl.get(0) - Math.abs(rotatedVec.get(0)));
+    rotatedVec.set(2, this.scl.get(2) - Math.abs(rotatedVec.get(2)));
+    if(rotatedVec.get(0) > 0 && rotatedVec.get(2) > 0){
+        return true;
+    }
+    else{
+        return false;
+    }
   }
 
 

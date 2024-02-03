@@ -68,6 +68,7 @@ class Camera {
     this.pos = Vec3.add(this.pos, new Vec3(mv.get(1), mv.get(2), mv.get(3)));
   }
 
+
   translateGravity =(forward, strafe, gridNormal)=> { 
 		if(forward == 0 && strafe == 0){
 			return;
@@ -85,67 +86,110 @@ class Camera {
     this.velocity.set(1, adder.get(1));
     this.velocity.set(2, adder.get(2));
 		
-  }
-
+  } 
 
   getVelocity =()=> {
     return this.velocity;
   }
 
-	isWalkingToGrid =(edge, dotThresh, perpThresh)=> {
-		let p_e0 = Vec3.subtract(this.pos, edge.p0);
-		let e1_e0 = Vec3.subtract(edge.p1, edge.p0);
-		let dotPE = Vec3.dot(p_e0, e1_e0);
-		let projPtoE = Vec3.scale(dotPE, e1_e0.normal());
-		let perpPtoE = Vec3.subtract(p_e0, projPtoE);
-		let perpPtoE_nor = perpPtoE.normal();
-		let dotToVelocity = Vec3.dot(perpPtoE_nor, this.velocity);
-		if(dotToVelocity > dotThresh){ // not walking towards plane
-			console.log("dot Vectors ", perpPtoE_nor, this.velocity);
-			return false;
-		}
-		let normalizedDot = dotPE / e1_e0.length(); 
-		if(normalizedDot <= 0 || normalizedDot >= 1){ // should be between 0 && 1
-			console.log("normalizedDot " + normalizedDot);
-			return false;
-		}
-		if(perpPtoE.length() > perpThresh){
-			console.log("perpLength " + perpPtoE.length());
-			return false;
-		}
+  isWalkingToGrid =(edge, grid, currentGrid, dotThresh, perpThresh)=> {
+        
+        let e1_e0 = Vec3.subtract(edge.p1, edge.p0);
+        let e1_e0_nor = e1_e0.normal();
+        let p_e0 = Vec3.subtract(this.pos, edge.p0);
+        let dotPE = Vec3.dot(p_e0, e1_e0_nor);
+        let prlToEdge = Vec3.scale(dotPE, e1_e0_nor);
+        let pplToEdge = Vec3.subtract(p_e0, prlToEdge);
+        let pplDistance = pplToEdge.length();
+        let dotPplVelocity = Vec3.dot(pplToEdge, this.velocity);
+        let normalizedDotPE = dotPE / e1_e0.length();  
 
-		return true;
-	}
+        if(pplDistance > perpThresh){
+            return false;
+        }
+
+        if(normalizedDotPE <= 0.0 || normalizedDotPE >= 1.0){
+            return false;
+        }
+
+        if(dotPplVelocity > dotThresh){
+            return false;
+        }
+
+        return true;
 
 
-  orientWithGrid =(grid, edge)=> {
+    }
 
-    let rad = Math.PI / 180.0;
-    let radx = this.rot.get(0)/2.0 * rad, rady = this.rot.get(1)/2.0 * rad;
+
+  orientWithGrid =(newGrid, prevGrid, edge)=> {
+
+    // normals always in direction plane to camPos
+    let newGridNormal = newGrid.normal;
+    let prevGridNormal = prevGrid.normal; 
     
-    let cx = Math.cos(radx), sx = Math.sin(radx);
-    let cy = Math.cos(rady), sy = Math.sin(rady);
+    // outside or inside
+    let outside = !edge.relativeUp;
     
-    let rotatedY = new Quat(cy, sy*grid.getNormal().get(0), sy*grid.getNormal().get(1), sy*grid.getNormal().get(2));
-		let rotation = edge.relativeUp ? grid.getRotation() : grid.getRotation().conjugate();
-    this.spin = Quat.multiplyMany(rotatedY, rotation, new Quat(cx, sx, 0, 0));
+    // pos in the plane
+    let squishedPos = Vec3.subtract(this.pos, prevGridNormal); // height is 1 no need to multiply normal with height
+    
+    // angle between normals
+    let angleBetweenNormals = Math.acos(Vec3.dot(newGridNormal,prevGridNormal));
+    let angle = Math.PI - angleBetweenNormals;
+    if(outside){
+        angle = 2*Math.PI - angle;
+    }
+     
+    // perpendicular to edge
+    let p_e0 = Vec3.subtract(squishedPos, edge.p0);
+    let e1_e0_nor = (Vec3.subtract(edge.p1, edge.p0)).normal();
+    let dotPE = Vec3.dot(p_e0, e1_e0_nor);
+    let prlToEdge = Vec3.scale(dotPE, e1_e0_nor);
+    let pplToEdge = Vec3.subtract(p_e0, prlToEdge);
 
-		let e1_e0 = Vec3.subtract(edge.p1, edge.p0);
-		let p_e0 = Vec3.subtract(this.pos, edge.p0);
-		let dotPE = Vec3.dot(e1_e0, p_e0);
-		let e1_e0_nor = e1_e0.normal();
-		let proj = Vec3.scale(dotPE, e1_e0_nor);
-		let edgeCenter = Vec3.scale(0.5, Vec3.add(edge.p0,edge.p1));
-		let forward = (Vec3.subtract(grid.pos, edgeCenter)).normal();
-		let dotForE = Vec3.dot( e1_e0_nor, forward );
-		let perpForw = Vec3.scale(dotForE, e1_e0_nor);
-		forward = Vec3.subtract(forward, perpForw);
-		let up = edge.relativeUp ? grid.getNormal() : Vec3.scale(-1.0, grid.getNormal());
-		this.pos = Vec3.add(proj, edgeCenter);
-		this.pos = Vec3.add(this.pos, up); 
-		this.pos = Vec3.add(this.pos, edge.p0);
+    // rotation quaternion
+    let cosAngle = Math.cos(angle/2.0);
+    let sinAngle = Math.sin(angle/2.0);
+
+    // get correct right hand rule position shit as rotation should be from prevGrid to newGrid only
+    let cross = Vec3.cross(e1_e0_nor, pplToEdge.normal());
+    let dotCrossNor = Vec3.dot(cross, prevGridNormal);
+    if(dotCrossNor < 0.0){ // not good sir
+        e1_e0_nor = Vec3.scale(-1, e1_e0_nor);
+    }
+    
+    let edgeSpin = new Quat(cosAngle, sinAngle*e1_e0_nor.get(0), sinAngle*e1_e0_nor.get(1), sinAngle*e1_e0_nor.get(2)); 
+
+
+    let pplToEdgeRotated = edgeSpin.rotateVec3(pplToEdge);
+
+
+
+    // new pos
+    this.pos = Vec3.add(edge.p0,  prlToEdge); // pivot in world space
+    this.pos = Vec3.add(this.pos, pplToEdgeRotated); // the rotation
+    this.pos = Vec3.add(this.pos, newGridNormal); // height wrt new plane
+
+    this.velocity = pplToEdgeRotated.normal();
+    
+    // new spin 
+    if(outside){
+        let cosAngle1 = Math.cos(angleBetweenNormals/2.0);
+        let sinAngle1 = Math.sin(angleBetweenNormals/2.0);
+        let edgeSpin1 = new Quat(cosAngle1,sinAngle1*e1_e0_nor.get(0),sinAngle1*e1_e0_nor.get(1),sinAngle1*e1_e0_nor.get(2));
+        this.spin = Quat.multiply(edgeSpin1, this.spin);
+    }else{
+        let angle1 = -(Math.PI - angle);
+        let cosAngle1 = Math.cos(angle1/2.0);
+        let sinAngle1 = Math.sin(angle1/2.0);
+        let edgeSpin1 = new Quat(cosAngle1,sinAngle1*e1_e0_nor.get(0),sinAngle1*e1_e0_nor.get(1),sinAngle1*e1_e0_nor.get(2));
+        this.spin = Quat.multiply(edgeSpin1, this.spin);
+    }
+   
 
   }
+
 
 
 

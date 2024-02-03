@@ -68,6 +68,10 @@ class Vec3 {
     return veca.data[0]*vecb.data[0] + veca.data[1]*vecb.data[1] + veca.data[2]*vecb.data[2];
   }
 
+  static cross =(veca, vecb)=> {
+    return new Vec3(veca.data[1]*vecb.data[2] -veca.data[2]*vecb.data[1], veca.data[2]*vecb.data[0] - veca.data[0]*vecb.data[2], veca.data[0]*vecb.data[1]-veca.data[1]*vecb.data[0]);  
+  }
+
 
   normal =()=> {
     const inv = 1.0/(this.length());

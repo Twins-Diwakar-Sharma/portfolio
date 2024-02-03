@@ -42,12 +42,11 @@ class Engine {
 		this.selectedVertex = worldGraph.vertices[0];
 		//this.cam.setPosition(0,4,-3);
 
-
-		console.log("length : " + this.selectedVertex.list.length);
-
+    this.prevCamPos = new Vec3(this.cam.pos.get(0), this.cam.pos.get(1), this.cam.pos.get(2));
   }
 
   loop =()=> {
+//  /*
     const ticks = 1000.0/60.0;
     setInterval( ()=> {
       if(! this.pause){
@@ -55,41 +54,60 @@ class Engine {
         this.render();
       }
     }, ticks);
-		
-	//	this.update();
+//*/		
+//		this.update();
 //		this.render();
   }
 
   render =()=> {
 
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    this.gridRenderer.render(this.selectedVertex.list, this.cam);
+    this.gridRenderer.render(this.selectedVertex, this.cam);
  
   }
 
   update =()=> {
 
     this.cam.rotateGravity(this.rotx, this.roty, this.selectedVertex.gridObject.getNormal());
+    for(let i=0; i<3; i++){
+        this.prevCamPos.data[i] = this.cam.pos.data[i];
+    }
     this.cam.translateGravity(this.forward, this.strafe, this.selectedVertex.gridObject.getNormal());
+    let inRange = this.selectedVertex.gridObject.inRange(this.cam.pos); 
+    if(!inRange){
+        for(let i=0; i<3; i++){
+            this.cam.pos.data[i] = this.prevCamPos.data[i];
+        }
+    }
+
     //this.cam.translate(this.forward, this.strafe);
     //this.cam.rotate(this.rotx, this.roty, 0);
 		
-		let dotThresh = -0.6;
-		let perpThresh = 1;
-		let gridChange = true;
+		let dotThresh = -0.0;
+		let perpThresh = 1.5;
+		let gridChange = false;
 		let newIndex = 0;
+        let changeEdge = null;
 		for(let i=1; i<this.selectedVertex.list.length; i++){
+        //for(let i=1; i<2; i++){
 			// velocity towards edge, distance
 			let edge = worldGraph.getEdge(this.selectedVertex, this.selectedVertex.list[i]);
-			let walkingToGrid = this.cam.isWalkingToGrid(edge, dotThresh, perpThresh);
+			let walkingToGrid = this.cam.isWalkingToGrid(edge, this.selectedVertex.list[i].gridObject,this.selectedVertex.gridObject, dotThresh, perpThresh);
 
-			console.log(walkingToGrid);			
 			if(walkingToGrid){
-				//this.selectedVertex = this.selectedVertex.list[i];
-				//this.cam.orientWithGrid(this.selectedVertex.gridObject, edge);
+                console.log("adjacencyIndex ", i);
+                gridChange = true;
+                newIndex = i;
+                changeEdge = edge;
 			}
 
 		}
+
+        if(gridChange){
+            gridChange = false;
+            this.cam.orientWithGrid(this.selectedVertex.list[newIndex].gridObject, this.selectedVertex.gridObject, changeEdge);
+            this.selectedVertex = this.selectedVertex.list[newIndex];
+        }
     
     this.roty = 0;
     this.rotx = 0;
