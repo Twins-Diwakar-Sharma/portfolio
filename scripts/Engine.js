@@ -1,16 +1,13 @@
 class Engine {
   
-  constructor(gl, width, height) {
+  constructor(width, height) {
 
     this.canvasWidth = width;
     this.canvasHeight = height;
 
-
-
-    this.gl = gl;
-    this.gl.enable(gl.DEPTH_TEST);
-    this.gl.clearColor(0.04, 0.04, 0.04, 1);
-    this.gl.viewport(0,0,width,height); 
+    gl.enable(gl.DEPTH_TEST);
+    gl.clearColor(0.04, 0.04, 0.04, 1);
+    gl.viewport(0,0,width,height); 
 
     document.addEventListener("keydown", this.keyDown, false);
     document.addEventListener("pointerlockchange", this.pointerLockChange, false);
@@ -30,13 +27,13 @@ class Engine {
     this.speed = 0.1;
     this.rotx = 0;
     this.roty = 0;
-    this.mouseSpeed = 0.5;
+    this.mouseSpeed = 0.1;
     this.pause = false;
 
     this.cam.setPosition(0,1,0);
 
-    this.gridMesh = new GridMesh(gl);  
-    this.gridRenderer = new GridRenderer(gl);
+    this.gridMesh = new GridMesh();  
+    this.gridRenderer = new GridRenderer();
 		
 		worldGraph.setMesh(this.gridMesh);
 		this.selectedVertex = worldGraph.vertices[0];
@@ -61,7 +58,7 @@ class Engine {
 
   render =()=> {
 
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.gridRenderer.render(this.selectedVertex, this.cam);
  
   }

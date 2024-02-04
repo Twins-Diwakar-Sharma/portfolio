@@ -1,8 +1,7 @@
 class GridRenderer {
   
-  constructor(gl) {
-    this.shader = new ShaderProgram(gl, shader_gridVertex, shader_gridFragment);
-    this.gl = gl;
+  constructor() {
+    this.shader = new ShaderProgram(shader_gridVertex, shader_gridFragment);
     this.shader.mapUniform("projection");
     this.shader.mapCameraUniform("cam");
     this.shader.mapUniform("scale");
@@ -39,8 +38,8 @@ class GridRenderer {
       this.shader.setUniformVec3("position", vertex.gridObject.getPosition());
       this.shader.setUniformQuat("rotation", vertex.gridObject.getRotation());
       this.shader.setUniformVec3("color", vertex.gridObject.getColor());
-      this.gl.enableVertexAttribArray(0);
-      this.gl.drawElements(this.gl.TRIANGLE_STRIP, vertex.gridObject.size(), this.gl.UNSIGNED_BYTE, 0);
-      this.gl.disableVertexAttribArray(0);
+      gl.enableVertexAttribArray(0);
+      gl.drawElements(gl.TRIANGLE_STRIP, vertex.gridObject.size(), gl.UNSIGNED_BYTE, 0);
+      gl.disableVertexAttribArray(0);
   }
 }

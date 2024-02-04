@@ -1,8 +1,7 @@
 class ObjectRenderer {
   
-  constructor(gl) {
-    this.shader = new ShaderProgram(gl, shader_objectVertex, shader_objectFragment);
-    this.gl = gl;
+  constructor() {
+    this.shader = new ShaderProgram(shader_objectVertex, shader_objectFragment);
     this.shader.mapUniform("projection");
     this.shader.mapUniform("transform");
     this.shader.mapUniform("albedo");
@@ -20,15 +19,15 @@ class ObjectRenderer {
     for(const obj of objects){
       this.shader.setUniformMat4("transform", obj.getTransform());
       obj.bind();
-      this.gl.activeTexture(this.gl.TEXTURE0);
-      this.gl.bindTexture(this.gl.TEXTURE_2D, obj.tex.getTextureID());
-      this.gl.enableVertexAttribArray(0);
-      this.gl.enableVertexAttribArray(1);
-      this.gl.enableVertexAttribArray(2);
-      this.gl.drawElements(this.gl.TRIANGLES, obj.size(), this.gl.UNSIGNED_BYTE, 0);
-      this.gl.disableVertexAttribArray(2);
-      this.gl.disableVertexAttribArray(1);
-      this.gl.disableVertexAttribArray(0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, obj.tex.getTextureID());
+      gl.enableVertexAttribArray(0);
+      gl.enableVertexAttribArray(1);
+      gl.enableVertexAttribArray(2);
+      gl.drawElements(gl.TRIANGLES, obj.size(), gl.UNSIGNED_BYTE, 0);
+      gl.disableVertexAttribArray(2);
+      gl.disableVertexAttribArray(1);
+      gl.disableVertexAttribArray(0);
 
       obj.unbind();
     }
@@ -36,3 +35,5 @@ class ObjectRenderer {
     this.shader.unuse();
   }
 }
+
+

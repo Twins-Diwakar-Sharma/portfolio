@@ -1,8 +1,7 @@
 class ObjectMesh extends Mesh{
 
-  constructor(gl, name) {
+  constructor(name) {
     super();
-    this.gl = gl;
     const path = "inventory/models/"+ name +".stc";
    this.size = 0; 
 
@@ -18,28 +17,28 @@ class ObjectMesh extends Mesh{
   }
 
   generate =(vertexData, indices)=> {
-    this.vao = this.gl.createVertexArray();
-    this.gl.bindVertexArray(this.vao);
-    this.vbo = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vbo);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexData), this.gl.STATIC_DRAW);
-    this.gl.vertexAttribPointer(0, 3, this.gl.FLOAT, false, 8*4, 0*4);
-    this.gl.vertexAttribPointer(1, 2, this.gl.FLOAT, false, 8*4, 3*4);
-    this.gl.vertexAttribPointer(2, 3, this.gl.FLOAT, false, 8*4, 5*4);
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-    this.ebo = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.ebo);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
-    this.gl.bindVertexArray(null);
+    this.vao = gl.createVertexArray();
+    gl.bindVertexArray(this.vao);
+    this.vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 8*4, 0*4);
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 8*4, 3*4);
+    gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 8*4, 5*4);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    this.ebo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
     this.size = indices.length;
   }
 
   bind =()=> {
-    this.gl.bindVertexArray(this.vao);
+    gl.bindVertexArray(this.vao);
   }
 
   unbind =()=> {
-    this.gl.bindVertexArray(null);
+    gl.bindVertexArray(null);
   }
 
   getSize =()=> {

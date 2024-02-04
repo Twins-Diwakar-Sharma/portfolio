@@ -1,5 +1,6 @@
 document.write(`
 
+<script src="scripts/globalContext.js"></script>
 <script src="scripts/Zebra.js"></script>
 <script src="scripts/projection.js"></script>
 <script src="scripts/Mesh.js"></script>

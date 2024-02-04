@@ -1,8 +1,7 @@
  class GridMesh extends Mesh{
 
-  constructor(gl) {
+  constructor() {
     super();
-    this.gl = gl;
 
     let vertexData = [-1,-1, -1,1, 1,-1, 1,1];
     let indices = [0,1,2,3];
@@ -11,25 +10,25 @@
   }
 
   generate =(vertexData, indices)=> {
-    this.vao = this.gl.createVertexArray();
-    this.gl.bindVertexArray(this.vao);
-    this.vbo = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vbo);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertexData), this.gl.STATIC_DRAW);
-    this.gl.vertexAttribPointer(0, 2, this.gl.FLOAT, false, 2*4, 0*4);
-    this.ebo = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.ebo);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
-    this.gl.bindVertexArray(null);
+    this.vao = gl.createVertexArray();
+    gl.bindVertexArray(this.vao);
+    this.vbo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexData), gl.STATIC_DRAW);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 2*4, 0*4);
+    this.ebo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ebo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
     this.size = indices.length;
   }
 
   bind =()=> {
-    this.gl.bindVertexArray(this.vao);
+    gl.bindVertexArray(this.vao);
   }
 
   unbind =()=> {
-    this.gl.bindVertexArray(null);
+    gl.bindVertexArray(null);
   }
 
   getSize =()=> {

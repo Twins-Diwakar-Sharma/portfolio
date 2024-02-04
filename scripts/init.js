@@ -1,7 +1,7 @@
 const start =()=> {
   
   let canvas = document.getElementById('canvas');
-  let gl = canvas.getContext('webgl2');
+  gl = canvas.getContext('webgl2');
 
   if(!gl)
   {
@@ -19,7 +19,7 @@ const start =()=> {
 
   console.log(canvas.width  + " : " + canvas.height);
 
-  let engine = new Engine(gl,  canvas.width, canvas.height); 
+  let engine = new Engine(canvas.width, canvas.height); 
   engine.loop();
 
 };
