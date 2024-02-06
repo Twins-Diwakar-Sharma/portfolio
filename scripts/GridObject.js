@@ -9,6 +9,8 @@ class GridObject extends Object{
 		this.color = new Vec3(1.0,1.0,1.0);
 		this.normal = new Vec3(0,1,0);
         this.upSide = true;
+        this.special = false;
+        this.objects = [];
   }
   
   bind =()=> {
@@ -148,6 +150,10 @@ class GridObject extends Object{
     else{
         return false;
     }
+  }
+
+  setObjects =(objectList)=> {
+    this.objects = objectList;
   }
 
 

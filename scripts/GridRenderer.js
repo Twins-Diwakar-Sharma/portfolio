@@ -8,6 +8,8 @@ class GridRenderer {
     this.shader.mapUniform("position");
     this.shader.mapUniform("rotation");
     this.shader.mapUniform("color");
+    this.shader.mapUniform("uTime");
+    this.shader.mapUniform("special");
   }
 
   render =(selectedVertex, cam)=> {
@@ -38,6 +40,8 @@ class GridRenderer {
       this.shader.setUniformVec3("position", vertex.gridObject.getPosition());
       this.shader.setUniformQuat("rotation", vertex.gridObject.getRotation());
       this.shader.setUniformVec3("color", vertex.gridObject.getColor());
+      this.shader.setUniformI1("special", vertex.gridObject.special ? 1 : 0);
+      this.shader.setUniformF1("uTime", performance.now()/1000);
       gl.enableVertexAttribArray(0);
       gl.drawElements(gl.TRIANGLE_STRIP, vertex.gridObject.size(), gl.UNSIGNED_BYTE, 0);
       gl.disableVertexAttribArray(0);

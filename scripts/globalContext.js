@@ -1,1 +1,1 @@
-const gl;
+let gl = null;

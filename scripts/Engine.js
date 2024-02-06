@@ -34,12 +34,20 @@ class Engine {
 
     this.gridMesh = new GridMesh();  
     this.gridRenderer = new GridRenderer();
-		
-		worldGraph.setMesh(this.gridMesh);
-		this.selectedVertex = worldGraph.vertices[0];
+
+    this.objectRenderer = new ObjectRenderer();
+    this.objects = [];
+	
+    createWorld(this.gridMesh);
+    this.selectedVertex = worldGraph.vertices[0];
 		//this.cam.setPosition(0,4,-3);
 
     this.prevCamPos = new Vec3(this.cam.pos.get(0), this.cam.pos.get(1), this.cam.pos.get(2));
+
+
+    this.parametricT = 0;
+    this.parametricTDelta = 0.05;
+
   }
 
   loop =()=> {
@@ -60,39 +68,36 @@ class Engine {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     this.gridRenderer.render(this.selectedVertex, this.cam);
- 
+        this.objectRenderer.render(this.objects, this.cam, this.sun);
   }
 
-  update =()=> {
 
+  updateDefault =()=> {
     this.cam.rotateGravity(this.rotx, this.roty, this.selectedVertex.gridObject.getNormal());
     for(let i=0; i<3; i++){
         this.prevCamPos.data[i] = this.cam.pos.data[i];
     }
     this.cam.translateGravity(this.forward, this.strafe, this.selectedVertex.gridObject.getNormal());
+
     let inRange = this.selectedVertex.gridObject.inRange(this.cam.pos); 
+    this.objects = this.selectedVertex.gridObject.objects;
+        
     if(!inRange){
         for(let i=0; i<3; i++){
             this.cam.pos.data[i] = this.prevCamPos.data[i];
         }
     }
-
-    //this.cam.translate(this.forward, this.strafe);
-    //this.cam.rotate(this.rotx, this.roty, 0);
-		
 		let dotThresh = -0.0;
 		let perpThresh = 1.5;
 		let gridChange = false;
 		let newIndex = 0;
         let changeEdge = null;
 		for(let i=1; i<this.selectedVertex.list.length; i++){
-        //for(let i=1; i<2; i++){
 			// velocity towards edge, distance
 			let edge = worldGraph.getEdge(this.selectedVertex, this.selectedVertex.list[i]);
 			let walkingToGrid = this.cam.isWalkingToGrid(edge, this.selectedVertex.list[i].gridObject,this.selectedVertex.gridObject, dotThresh, perpThresh);
 
 			if(walkingToGrid){
-                console.log("adjacencyIndex ", i);
                 gridChange = true;
                 newIndex = i;
                 changeEdge = edge;
@@ -104,7 +109,31 @@ class Engine {
             gridChange = false;
             this.cam.orientWithGrid(this.selectedVertex.list[newIndex].gridObject, this.selectedVertex.gridObject, changeEdge);
             this.selectedVertex = this.selectedVertex.list[newIndex];
+            this.cam.animate = true;
         }
+  }
+
+  updateCameraAnimate =()=> {
+    this.cam.linearInterpolate(this.parametricT);
+    this.parametricT += this.parametricTDelta;
+    if(this.parametricT > 1.0){
+        this.parametricT = 0;
+        this.cam.animate = false;
+        this.cam.pos = this.cam.nextPos;
+        this.cam.spin = this.cam.nextSpin;
+    }
+  }
+
+  update =()=> {
+    
+    if(!this.cam.animate){
+        this.updateDefault();
+    }else{
+        this.updateCameraAnimate();
+    }
+
+    console.log("abada   ", this.objects.length);
+
     
     this.roty = 0;
     this.rotx = 0;

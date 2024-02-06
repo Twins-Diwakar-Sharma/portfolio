@@ -79,6 +79,7 @@ void main()
 	vec3 diffuseColor = diffuse*sun.color;
   color = diffuseColor * color;
   outColor = vec4(color,1.0);
+
   
 
 }`;
@@ -100,6 +101,7 @@ uniform vec3 position;
 uniform vec4 rotation;
 
 out vec2 scaledPos;
+out vec2 OPos;
 
 vec4 quatMultiply(vec4 action, vec4 victim)
 {
@@ -135,7 +137,7 @@ void main()
 
 	vec4 projectedPos = projection * vec4(viewPos,1.0);
 
-
+    OPos = objectPos.xz ;
 	gl_Position = projectedPos;
 
 }
@@ -149,25 +151,62 @@ in vec2 scaledPos;
 
 out vec4 outColor;
 
+in vec2 OPos;
+
 uniform vec3 color;
+
+uniform int special;
+
+uniform float uTime;
 
 void main()
 {
-  vec2 d = (scaledPos);
-  d = fract(d); 
-  d = 0.005/d;
-  
-  
-  vec2 d1 = vec2(1.0) - vec2(scaledPos);
-  d1 = fract(d1); 
-  d1 = 0.005/d1;
 
-  float res = d.x + d.y + d1.x + d1.y;
-  vec3 modifiedColor = color * res;
-  
-  //modifiedColor = smoothstep(0.0,1.0,modifiedColor);
+ if(special == 0)
+ {
+      vec2 d = (scaledPos);
+      d = fract(d); 
+      d = 0.005/d;
+      
+      
+      vec2 d1 = vec2(1.0) - vec2(scaledPos);
+      d1 = fract(d1); 
+      d1 = 0.005/d1;
 
-  outColor = vec4(modifiedColor,1.0);  
+      float res = d.x + d.y + d1.x + d1.y;
+      vec3 modifiedColor = color * res;
+      
+
+      outColor = vec4(modifiedColor,1.0);  
+  }
+  else {
+    
+     vec2 uv = OPos + vec2(1.);
+     
+     uv *= 0.5;
+
+     vec2 d = (uv);
+     d = 0.005/d;
+      
+      vec2 d1 = vec2(1.0) - vec2(uv);
+      d1 = fract(d1);
+      d1 = 0.005/d1;
+
+      float res = d.x + d.y + d1.x + d1.y;
+
+      float gol = length(OPos);
+      
+      gol = sin(gol*8. + uTime)/8.;
+      gol = 0.005/gol;
+      gol = abs(gol);
+      
+      res = gol+res;
+
+      vec3 modifiedColor = color * res;
+      
+
+      outColor = vec4(modifiedColor,1.0);  
+  }
 
 } 
 `;

@@ -2,18 +2,33 @@ class ObjectMesh extends Mesh{
 
   constructor(name) {
     super();
-    const path = "inventory/models/"+ name +".stc";
-   this.size = 0; 
+    this.size = 0; 
+    
+    if(!!name){
+        const path = "inventory/models/"+ name +".stc";
+        fetch(path)
+          .then(response => response.text())
+          .then((data) => {
+            let arrays = data.split("\n"); 
+            let vertexData = (arrays[0].split(" ")).map(Number);
+            let indices = (arrays[1].split(" ")).map(Number);
+            this.generate(vertexData,indices);
+            this.size = indices.length;
+          }) ;
+      }else{
 
-    fetch(path)
-      .then(response => response.text())
-      .then((data) => {
-        let arrays = data.split("\n"); 
-        let vertexData = (arrays[0].split(" ")).map(Number);
-        let indices = (arrays[1].split(" ")).map(Number);
-        this.generate(vertexData,indices);
+        let vertexData = [
+            1.0,	0.0,	-1.0,	1.0, 1.0, 0.0, 1.0, 0.0,
+            1.0,	0.0,	1.0,	1.0, 0.0, 0.0, 1.0, 0.0,
+            -1.0,	0.0,	-1.0,	0.0, 1.0, 0.0, 1.0, 0.0,
+            -1.0,	0.0,	1.0,  0.0, 0.0, 0.0, 1.0, 0.0,
+        ];
+
+        let indices = [0,1,	3,  0,	3,	2];
+        this.generate(vertexData, indices);
         this.size = indices.length;
-      }) ;
+        
+      }
   }
 
   generate =(vertexData, indices)=> {

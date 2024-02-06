@@ -10,6 +10,7 @@ class GameObject extends Object{
     this.transform = new Mat4();
     this.sync();
     this.color = new Vec3(1.0,1.0,1.0);
+    this.spin = new Quat(1,0,0,0);
   }
   
   sync =()=> {

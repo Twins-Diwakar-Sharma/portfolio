@@ -5,7 +5,14 @@ class Camera {
     this.pos = new Vec3(0,0,0);
     this.velocity = new Vec3(0,0,-1);
     this.rot = new Vec3(0,0,0);
+    
+    this.animate = false;
 
+    this.prevPos = new Vec3(0,0,0);
+    this.prevSpin = new Quat(1,0,0,0);
+
+    this.nextPos = new Vec3(0,0,0);
+    this.nextSpin = new Quat(1,0,0,0);
 
   }
 
@@ -123,6 +130,9 @@ class Camera {
 
 
   orientWithGrid =(newGrid, prevGrid, edge)=> {
+    Vec3.equal(this.prevPos, this.pos);
+    Quat.equal(this.prevSpin, this.spin);
+    this.animate = true;
 
     // normals always in direction plane to camPos
     let newGridNormal = newGrid.normal;
@@ -186,11 +196,24 @@ class Camera {
         let edgeSpin1 = new Quat(cosAngle1,sinAngle1*e1_e0_nor.get(0),sinAngle1*e1_e0_nor.get(1),sinAngle1*e1_e0_nor.get(2));
         this.spin = Quat.multiply(edgeSpin1, this.spin);
     }
-   
+    
+    Vec3.equal(this.nextPos, this.pos);
+    Vec3.equal(this.pos, this.prevPos);
+    Quat.equal(this.nextSpin, this.spin);
+    Quat.equal(this.spin, this.prevSpin);
 
   }
 
 
-
+  linearInterpolate =(parametricT)=> {
+    this.pos = Vec3.add( 
+                    Vec3.scale(1.0-parametricT,this.prevPos),
+                    Vec3.scale(parametricT, this.nextPos)
+                    );
+    this.spin = Quat.add(
+                    Quat.scale(1.0-parametricT, this.prevSpin),
+                    Quat.scale(parametricT, this.nextSpin)
+                    );
+  }
 
 }

@@ -78,6 +78,12 @@ class Vec3 {
     return Vec3.scale(inv, this);
   }
 
+  static equal =(veca, vecb)=> {
+    for(let i=0; i<3; i++){
+        veca.data[i] = vecb.data[i];
+    }
+  }
+
 }
 
 class Vec4 {
@@ -309,6 +315,12 @@ class Quat{
     let qVec = new Quat(0, vec.get(0), vec.get(1), vec.get(2));
     qVec = Quat.multiplyMany(this, qVec, invQuat);
     return new Vec3(qVec.get(1), qVec.get(2), qVec.get(3));
+  }
+
+  static equal =(q, p)=> {
+    for(let i=0; i<4; i++){
+        q.data[i] = p.data[i];     
+    }
   }
 
 }

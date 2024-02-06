@@ -10,8 +10,8 @@ class GraphVertex {
 	
 	static counter = 0;
 
-  constructor(){
-		this.gridObject = new GridObject(null);
+  constructor(go){
+		this.gridObject = go;
 		this.list = [this];
 		this.num = GraphVertex.counter++;
   }
@@ -42,11 +42,6 @@ class Graph {
 
 	vertices = []; // make it easy at render function, remember 0 always me
 
-	setMesh =(gridMesh)=> {
-		for(let i=0; i<this.vertices.length; i++){
-			this.vertices[i].gridObject.setMesh(gridMesh);
-		}
-	}
 
 	hash =(gv0, gv1)=> {
 		return 1000 * (gv0.num * gv1.num) + (gv0.num + gv1.num);
@@ -76,16 +71,17 @@ class Graph {
 
 
 let worldGraph = new Graph();
-function createWorld(){
+
+function createWorld(gridMesh){
     let radConv = Math.PI / 180.0;
 
 
-    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));
     worldGraph.vertices[0].gridObject.setPosition(0,0,0);
     worldGraph.vertices[0].gridObject.setScale(2,2,4);
     worldGraph.vertices[0].gridObject.setColor(1.1,2.1,1.8);
 
-    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));
     worldGraph.vertices[1].gridObject.setRotation(-30, 0, 0);
     worldGraph.vertices[1].gridObject.setScale(1,1,4);
     worldGraph.vertices[1].gridObject.setPosition(0,0,-4);
@@ -98,7 +94,7 @@ function createWorld(){
     let corners = worldGraph.getGridObject(1).getCorners();
     let edge01 = new GraphEdge(corners.botLeft, corners.botRight, false);
     worldGraph.makeAdjacent(0, 1, edge01);
-    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));
     worldGraph.getGridObject(2).setRotation(90,0,0);
     worldGraph.getGridObject(2).setScale(3,1,3);
     worldGraph.getGridObject(2).setPosition(0,3,-4);
@@ -110,7 +106,7 @@ function createWorld(){
 
     worldGraph.makeAdjacent(1, 2, edge12);
 
-    worldGraph.vertices.push(new GraphVertex());
+    worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));
     worldGraph.getGridObject(3).setColor(3.1, 1.1, 1.5);
     worldGraph.getGridObject(3).setScale(1,1,2);
     worldGraph.getGridObject(3).setRotation(0,90,0);
@@ -125,7 +121,26 @@ function createWorld(){
     corners = worldGraph.getGridObject(3).getCorners();
     let edge03 = new GraphEdge(corners.topLeft, corners.topRight, true);
     worldGraph.makeAdjacent(0, 3, edge03);
+
+    ///////////////////////////
+    worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));
+    worldGraph.getGridObject(4).special = true;
+    worldGraph.getGridObject(4).setColor(2.0, 1.0, 2.0);
+    worldGraph.getGridObject(4).setScale(1,1,1);
+    // lagaing in the chutad
+    worldGraph.getGridObject(4).setPosition(0,0,2);
+    worldGraph.getGridObject(4).setRotation(-60,0,0);
+    angle = 60 * radConv;
+    toAdd = new Vec3( 0,  1.0 * Math.sin(angle), 1.0 * Math.cos(angle));
+    worldGraph.getGridObject(4).pos = Vec3.add(worldGraph.getGridObject(4).pos, toAdd);
+    worldGraph.getGridObject(4).convertToWorld(worldGraph.getGridObject(3));
+
+    let planeObject = new GameObject(new ObjectMesh(), new Texture("woodBox"));
+    let poss = worldGraph.getGridObject(4).pos;
+
+    worldGraph.getGridObject(4).setObjects([planeObject]);
+    let edge34 = new GraphEdge(corners.botLeft, corners.botRight, true);
+    worldGraph.makeAdjacent(3, 4, edge34);
 }
 
-createWorld();
 
