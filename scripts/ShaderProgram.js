@@ -28,7 +28,7 @@ class ShaderProgram {
     gl.compileShader(shaderID);
 
     if(!gl.getShaderParameter(shaderID, gl.COMPILE_STATUS)) {
-      console.log("An error occured compiling shader\n");
+      console.log("An error occured compiling shader\n", source);
       console.log(gl.getShaderInfoLog(shaderID));
       gl.deleteShader(shaderID);
     }
@@ -72,6 +72,11 @@ class ShaderProgram {
   setUniformF1 =(name,val)=> {
     let uniformLoc = this.uniformMap.get(name);
     gl.uniform1f(uniformLoc,val);
+  }
+
+  setUniformVec2 =(name, arr)=> {
+    let uniformLoc = this.uniformMap.get(name);
+    gl.uniform2f(uniformLoc, arr[0], arr[1]);
   }
 
   setUniformVec3 =(name,vec)=> {

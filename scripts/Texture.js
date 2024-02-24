@@ -5,6 +5,8 @@ class Texture {
     gl.bindTexture(gl.TEXTURE_2D, this.texID);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
     gl.bindTexture(gl.TEXTURE_2D, null);
+    this.cols = 1.0;
+    this.rows = 1.0;
 
     let image =  new Image();
     image.src = "inventory/textures/" + name + ".png";
@@ -23,7 +25,17 @@ class Texture {
     });
   }
 
+  setColsRows =(c,r)=> {
+    this.cols = c;
+    this.rows = r;
+  }
+
   getTextureID =()=> {
     return this.texID;
   }
+
+  getColsRows =()=> {
+    return [this.cols, this.rows];
+  }
+
 }

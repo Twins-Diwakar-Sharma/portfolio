@@ -11,6 +11,10 @@ class GridObject extends Object{
         this.upSide = true;
         this.special = false;
         this.objects = [];
+        this.link = null;
+        this.objectsTexture = null;
+        this.alpha = 1.0;
+        this.animationState = 0; // 0:normal, 1:fadeIn, 2:fadeOut, 3:justChangedToNormal
   }
   
   bind =()=> {
@@ -94,7 +98,11 @@ class GridObject extends Object{
 		this.color.set(1,g);
 		this.color.set(2,b);
   }
-  
+
+  setColorVec =(colorVec)=> {
+        this.color = colorVec;
+  }
+
   getNormal =()=> {
 		return this.normal;
   }
@@ -156,6 +164,10 @@ class GridObject extends Object{
     this.objects = objectList;
   }
 
+  setObjectsTexture =(texture)=> {
+    this.objectsTexture = texture;
+  } 
+    
 
 }
 

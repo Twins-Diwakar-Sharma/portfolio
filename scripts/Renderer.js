@@ -3,24 +3,39 @@ class ObjectRenderer {
   constructor() {
     this.shader = new ShaderProgram(shader_objectVertex, shader_objectFragment);
     this.shader.mapUniform("projection");
-    this.shader.mapUniform("transform");
+    this.shader.mapUniform("position");
+    this.shader.mapUniform("rotation");
+    this.shader.mapUniform("scale");
     this.shader.mapUniform("albedo");
     this.shader.mapCameraUniform("cam");
-    this.shader.mapDirectionalLightUniform("sun");
+    this.shader.mapUniform("overlayColor");
+    this.shader.mapUniform("subTexPos");
+    this.shader.mapUniform("colsRows");
+    this.shader.mapUniform("sign");
   }
 
-  render =(objects, cam, sun)=> {
+  render =(objects, cam, texture)=> {
+    if(objects.length <= 0)
+        return;
     this.shader.use();
     this.shader.setUniformMat4("projection", proj_perspective);
     this.shader.setUniformI1("albedo", 0);
     this.shader.setUniformCam("cam", cam);
-    this.shader.setUniformDirectionalLight("sun", sun);
+    
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture.getTextureID());
+    this.shader.setUniformVec2("colsRows", texture.getColsRows());
+    
 
     for(const obj of objects){
-      this.shader.setUniformMat4("transform", obj.getTransform());
+      this.shader.setUniformVec3("scale", obj.getScale());
+      this.shader.setUniformVec3("position", obj.getPosition());
+      this.shader.setUniformQuat("rotation", obj.getRotation());
+      this.shader.setUniformVec3("overlayColor", obj.getColor());
+      this.shader.setUniformF1("subTexPos", obj.subTexPos);
+      this.shader.setUniformI1("sign", obj.sign);
+
       obj.bind();
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, obj.tex.getTextureID());
       gl.enableVertexAttribArray(0);
       gl.enableVertexAttribArray(1);
       gl.enableVertexAttribArray(2);
@@ -34,6 +49,7 @@ class ObjectRenderer {
 
     this.shader.unuse();
   }
+
 }
 
 

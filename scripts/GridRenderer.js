@@ -10,6 +10,7 @@ class GridRenderer {
     this.shader.mapUniform("color");
     this.shader.mapUniform("uTime");
     this.shader.mapUniform("special");
+    this.shader.mapUniform("texAlpha");
   }
 
   render =(selectedVertex, cam)=> {
@@ -35,6 +36,8 @@ class GridRenderer {
     this.shader.unuse();
   }
 
+
+
   drawVertex =(vertex)=> {
       this.shader.setUniformVec3("scale", vertex.gridObject.getScale());
       this.shader.setUniformVec3("position", vertex.gridObject.getPosition());
@@ -42,8 +45,29 @@ class GridRenderer {
       this.shader.setUniformVec3("color", vertex.gridObject.getColor());
       this.shader.setUniformI1("special", vertex.gridObject.special ? 1 : 0);
       this.shader.setUniformF1("uTime", performance.now()/1000);
+      this.shader.setUniformF1("texAlpha", vertex.gridObject.alpha);
       gl.enableVertexAttribArray(0);
       gl.drawElements(gl.TRIANGLE_STRIP, vertex.gridObject.size(), gl.UNSIGNED_BYTE, 0);
       gl.disableVertexAttribArray(0);
   }
+
+
+  renderGraphIndices =(worldGraph, indexArray, cam)=> {
+    if(indexArray.length <= 0)
+        return;
+
+    this.shader.use();
+    this.shader.setUniformMat4("projection", proj_perspective);
+    this.shader.setUniformCam("cam", cam);
+    
+    worldGraph.vertices[indexArray[0]].gridObject.bind();
+    for(let i=0; i<indexArray.length; i++){
+        this.drawVertex(worldGraph.vertices[indexArray[i]]);
+    }
+    worldGraph.vertices[indexArray[0]].gridObject.unbind();
+    
+    this.shader.unuse();
+  }
+
+
 }
