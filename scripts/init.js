@@ -17,8 +17,6 @@ const start =()=> {
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
 
-  console.log(canvas.width  + " : " + canvas.height);
-
   let engine = new Engine(canvas.width, canvas.height); 
   engine.loop();
 

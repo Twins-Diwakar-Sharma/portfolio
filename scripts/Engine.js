@@ -23,7 +23,7 @@ class Engine {
 
     this.forward = 0;
     this.strafe = 0;
-    this.speed = 0.1;
+    this.speed = 0.2;
     this.rotx = 0;
     this.roty = 0;
     this.mouseSpeed = 0.1;
