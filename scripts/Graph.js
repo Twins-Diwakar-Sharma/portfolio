@@ -91,6 +91,17 @@ function createWorld(gridMesh){ // at each new gridObject, keep normal in mind
     grid.setColor(1.1, 1.8, 2.2);
     grid.setScale(2,1,4);
     grid.setPosition(0,0,-grid.scl.get(2) + 1);
+    grid.setObjectsTexture(new Texture("tutorial"));
+    grid.objectsTexture.setColsRows(1.0,1.0);
+    proj_desc = new GameObject(new ObjectMesh(), grid.objectsTexture);
+    proj_desc.subTexPos = 0;
+    proj_desc.setScale(2,1,1);
+    proj_desc.setRotation(90,-90,0);
+    proj_desc.setPosition(grid.scl.get(0)+1, 1, -4.5);
+    proj_desc.parametricT = -2;
+    proj_desc.setColorVec(grid.getColor());
+    grid.setObjects([proj_desc]);
+
 
     // 1 main
     worldGraph.vertices.push(new GraphVertex(new GridObject(gridMesh)));

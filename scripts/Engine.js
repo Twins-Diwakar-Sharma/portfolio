@@ -9,6 +9,7 @@ class Engine {
     gl.clearColor(0.04, 0.04, 0.04, 1);
     gl.viewport(0,0,width,height); 
 
+    
     document.addEventListener("keydown", this.keyDown, false);
     document.addEventListener("pointerlockchange", this.pointerLockChange, false);
     document.addEventListener("mozpointerlockchange", this.pointerLockChange, false);
@@ -17,13 +18,17 @@ class Engine {
                                                 document.body.mozRequestPointerLock ||
                                                 document.body.webkitRequestPointerLock;
 
+    if(isTouchScreen){
+        document.addEventListener("touchmove", this.touchMove);
+    }
+
     setProjection(0.1, 1000.0, 60.0, width, height);
 
     this.cam = new Camera();
 
     this.forward = 0;
     this.strafe = 0;
-    this.speed = 0.2;
+    this.speed = 0.15;
     this.rotx = 0;
     this.roty = 0;
     this.mouseSpeed = 0.1;
@@ -72,6 +77,9 @@ class Engine {
     this.gridAnimT = 0.0;
     this.gridAnimTDelta = 0.01;
 
+    this.objects = this.selectedVertex.gridObject.objects;
+    this.objectsTexture = this.selectedVertex.gridObject.objectsTexture;
+ 
   }
 
   loop =()=> {
@@ -233,6 +241,12 @@ class Engine {
     this.rotx += (-y) * this.mouseSpeed;
     this.roty += (-x) * this.mouseSpeed;
     
+  }
+
+  touchMove =(event)=> {
+     let x = event.rotation;
+     this.roty += this.mouseSpeed;
+     console.log(x);
   }
 
   pointerLockChange =(event)=> {

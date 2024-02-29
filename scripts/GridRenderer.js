@@ -11,6 +11,7 @@ class GridRenderer {
     this.shader.mapUniform("uTime");
     this.shader.mapUniform("special");
     this.shader.mapUniform("texAlpha");
+    console.log("Made by Diwakar Sharma & Divyanshu Sharma");
   }
 
   render =(selectedVertex, cam)=> {

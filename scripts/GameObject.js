@@ -162,7 +162,11 @@ class GameObject extends Object{
   //  this.scl.set(1, this.parametricT * this.originalScl.get(1));
 
     if(this.sign == 0){
-        this.scl.set(2, this.parametricT * this.originalScl.get(2));
+        let val = this.parametricT * this.originalScl.get(2);
+        if(val >= 0)
+            this.scl.set(2,val);
+        else
+            this.scl.set(2,0);
         this.parametricT += this.parametricTDelta;
    }
     else {
